@@ -239,7 +239,10 @@ def player():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        if(request.args.get("action")=="op"):
+        if(request.args.get("action")=="add"):
+            wl_add(request.args.get("name"))
+            return "Accepted", 202
+        elif(request.args.get("action")=="op"):
             operator(request.args.get("name"))
             return "Accepted", 202
         elif(request.args.get("action")=="deop"):
@@ -277,31 +280,10 @@ def player():
     else:
         return "Unauthorized", 401
 
-@app.route("/whitelist", methods= ["GET"])
-def whitelist():
-    password="null"
-    if "pass" in request.headers:
-        password=request.headers["pass"]
-    if (password==mypass):
-        if(request.args.get("action")=="on" or request.args.get("action")=="off"):
-            print("Aqui no entro")
-            wl_activation(request.args.get("action"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="add"):
-            wl_add(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="add"):
-            wl_remove(request.args.get("name"))
-            return "Accepted", 202
-        else:
-            return "Bad request", 400
-    else:
-        return "Unauthorized", 401
-
 @app.route("/test", methods= ["GET"])
 def test():
     sendMessage("Hola chicos")
-    return {"Status":"Server stopped", "Date": datetime.now().strftime("%d-%m-%Y_%H:%M")}, 200
+    return {"Status":"Server crazy", "Date": datetime.now().strftime("%d-%m-%Y_%H:%M")}, 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=12345, debug=True)
