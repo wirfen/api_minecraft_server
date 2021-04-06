@@ -7,37 +7,43 @@ from flask_cors import CORS
 from datetime import datetime
 from mcstatus import MinecraftServer
 
-mypass="123"
-
+mypass = "123"
 servidor = MinecraftServer.lookup("localhost")
 
 app = Flask(__name__)
 
 @app.route("/install", methods = ["POST"])
 def install():
-    os.system("wget {} -O server.jar".format(request.get_json()["url"]))
-    os.system("mkdir saves backups")
-    f = open("eula.txt", "w")
-    f.write("eula=true")
-    f.close()
-    f = open("start.sh", "w")
-    f.write("#!/bin/bash\njava -Xms{}M -Xmx{}M -jar server.jar nogui".format(request.get_json()["min_memory"],request.get_json()["max_memory"]))
-    f.close()
-    os.system("cp funciones/server.properties .")
-    os.system("chmod +x start.sh")
-    startMinecraft()
-    return "Installed"
+    password="null"
+    if "pass" in request.headers:
+        password=request.headers["pass"]
+    if (password==mypass):
+        os.system("wget {} -O server.jar".format(request.get_json()["url"]))
+        os.system("mkdir saves backups")
+        f = open("eula.txt", "w")
+        f.write("eula=true")
+        f.close()
+        f = open("start.sh", "w")
+        f.write("#!/bin/bash\njava -Xms{}M -Xmx{}M -jar server.jar nogui".format(request.get_json()["min_memory"],request.get_json()["max_memory"]))
+        f.close()
+        os.system("chmod +x start.sh")
+        os.system("cp funciones/server.properties .")
+        startMinecraft()
+        return "Installed"
+    else:
+        return "Unauthorized", 401
 
 @app.route("/status", methods = ["GET"])
 def status():
     password="null"
     if "pass" in request.headers:
         password=request.headers["pass"]
-    if (password=="123"):
+    if (password==mypass):
         try:
-            status=servidor.status()
-            query=servidor.query()
-            return {"Ping":status.latency, "Players-Names":"{}".format(", ".join(query.players.names)), "Players":status.players.online}
+            s=servidor.status()
+            q=servidor.query()
+            q.players.online
+            return {"Ping":s.latency, "Players-Names":"{}".format(", ".join(q.players.names)), "Players":s.players.online}
         except ConnectionRefusedError:
             return "Server shutdown", 503
     else:
@@ -80,12 +86,10 @@ def makebackup():
 
 @app.route("/download", methods = ["GET"])
 def download():
-    print("Algo pasa")
     password="null"
     if "pass" in request.headers:
         password=request.headers["pass"]
-    if (True):
-        #if(request.args.get("backup") and not request.args.get("mapa")):
+    if (password==mypass):
         if(request.args.get("backup")):
             print(request.args.get("backup"))
             mapa=request.args.get("backup").split("-")[0]
@@ -171,14 +175,26 @@ def change():
 
 @app.route("/properties", methods = ["GET"])
 def getProperties():
-    properties = open("server.properties").read()
-    return properties, 200
+    password="null"
+    if "pass" in request.headers:
+        password=request.headers["pass"]
+    if (password==mypass):
+        properties = open("server.properties").read()
+        return properties, 200
+    else:
+        return "Unauthorized", 401
 
 @app.route("/properties", methods = ["PUT"])
 def setProperties():
-    open("server.properties","w").write(request.get_data().decode().replace("\n",""))
-    properties = open("server.properties").read()
-    return properties, 201
+    password="null"
+    if "pass" in request.headers:
+        password=request.headers["pass"]
+    if (password==mypass):
+        open("server.properties","w").write(request.get_data().decode().replace("\n",""))
+        properties = open("server.properties").read()
+        return properties, 201
+    else:
+        return "Unauthorized", 401
 
 @app.route("/delete", methods= ["DELETE"])
 def delete():
@@ -222,7 +238,6 @@ def server():
             startMinecraft()
             return "Accepted", 202
         elif(request.args.get("action")=="weather"): #Reiniciar minecraft
-            print("Cambiemos el clima")
             setWheater(request.args.get("condition"))
             return "Accepted", 202
         elif(request.args.get("action")=="daytime"): #Reiniciar minecraft
@@ -239,9 +254,8 @@ def player():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        if(request.args.get("action")=="add"):
+        if(request.args.get("action")=="op"):
             wl_add(request.args.get("name"))
-            return "Accepted", 202
         elif(request.args.get("action")=="op"):
             operator(request.args.get("name"))
             return "Accepted", 202
@@ -283,7 +297,7 @@ def player():
 @app.route("/test", methods= ["GET"])
 def test():
     sendMessage("Hola chicos")
-    return {"Status":"Server crazy", "Date": datetime.now().strftime("%d-%m-%Y_%H:%M")}, 200
+    return {"Status":"Server Crazy", "Date": datetime.now().strftime("%d-%m-%Y_%H:%M")}, 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=12345, debug=True)
