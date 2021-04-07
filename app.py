@@ -111,10 +111,12 @@ def restore():
     if (password==mypass):
         # Restauramos un fichero que subamos
         if(request.content_type and not request.args.get("backup")):
+            print("Restaurar fichero")
             file = request.files["fichero"]
             mapa=file.filename.split("-")[0]
             try:
                 stopMinecraft()
+                os.system("mkdir -p backups/{}".format(mapa))
                 file.save("backups/{}/".format(mapa) + file.filename) #Guardamos el mapa en backups
                 os.system("rm -r saves/{}".format(mapa)) #Borramos el mapa
                 os.system("mkdir -p saves/{} && tar -xzf backups/{}/{} -C saves/{}".format(mapa, mapa, file.filename, mapa)) #Restauramos el mapa subido
