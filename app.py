@@ -1,9 +1,8 @@
 from funciones.server import *
 from funciones.player import *
 from funciones.whitelist import *
-import os, json, ssl, time, random
-from flask import Flask, request, send_file, make_response
-from flask_cors import CORS
+import os, json, time
+from flask import Flask, request, send_file
 from datetime import datetime
 from mcstatus import MinecraftServer
 
