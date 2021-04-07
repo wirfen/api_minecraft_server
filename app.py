@@ -18,17 +18,11 @@ def install():
         password=request.headers["pass"]
     if (password==mypass):
         os.system("cp funciones/server.properties .")
-        print("He copiado el server.properties")
-        time.sleep(10)
         os.system("wget {} -O server.jar".format(request.get_json()["url"]))
         os.system("mkdir saves backups")
         open("eula.txt","w").write("eula=true")
         open("start.sh","w").write("#!/bin/bash\njava -Xms{}M -Xmx{}M -jar server.jar nogui".format(request.get_json()["min_memory"],request.get_json()["max_memory"]))
-        time.sleep(10)
-        print("He creado los ficheros necesarios")
         os.system("chmod +x start.sh")
-        time.sleep(10)
-        print("Arranco minecraft")
         startMinecraft()
         return "Installed"
     else:
@@ -117,7 +111,6 @@ def restore():
     if (password==mypass):
         # Restauramos un fichero que subamos
         if(request.content_type and not request.args.get("backup")):
-            print("Restaurar fichero")
             file = request.files["fichero"]
             mapa=file.filename.split("-")[0]
             try:
