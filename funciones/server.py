@@ -5,8 +5,8 @@ def startMinecraft():
     return True
 
 def stopMinecraft():
-    sendMessage("Vamos a parar el servidor en 30 segundos.")
-    time.sleep(30)
+    sendMessage("Vamos a parar el servidor en 10 segundos.")
+    time.sleep(10)
     os.system("screen -S minecraft -p 0 -X stuff 'kick @a^M'")
     os.system("screen -S minecraft -p 0 -X stuff 'save-all^M'")
     time.sleep(3)

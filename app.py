@@ -19,12 +19,8 @@ def install():
     if (password==mypass):
         os.system("wget {} -O server.jar".format(request.get_json()["url"]))
         os.system("mkdir saves backups")
-        f = open("eula.txt", "w")
-        f.write("eula=true")
-        f.close()
-        f = open("start.sh", "w")
-        f.write("#!/bin/bash\njava -Xms{}M -Xmx{}M -jar server.jar nogui".format(request.get_json()["min_memory"],request.get_json()["max_memory"]))
-        f.close()
+        open("eula.txt","w").write("eula=true")
+        open("start.sh","w").write("#!/bin/bash\njava -Xms{}M -Xmx{}M -jar server.jar nogui".format(request.get_json()["min_memory"],request.get_json()["max_memory"]))
         os.system("chmod +x start.sh")
         os.system("cp funciones/server.properties .")
         startMinecraft()
@@ -39,11 +35,11 @@ def status():
         password=request.headers["pass"]
     if (password==mypass):
         try:
-            s=servidor.status()
-            q=servidor.query()
-            q.players.online
-            return {"Ping":s.latency, "Players-Names":"{}".format(", ".join(q.players.names)), "Players":s.players.online}
-        except ConnectionRefusedError:
+            status=servidor.status()
+            query=servidor.query()
+            query.players.online
+            return {"Ping":status.latency, "Players-Names":"{}".format(", ".join(query.players.names)), "Players":status.players.online}
+        except:
             return "Server shutdown", 503
     else:
         return "Unauthorized", 401
@@ -249,8 +245,9 @@ def player():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        if(request.args.get("action")=="op"):
+        if(request.args.get("action")=="add"):
             wl_add(request.args.get("name"))
+            return "Accepted", 202
         elif(request.args.get("action")=="op"):
             operator(request.args.get("name"))
             return "Accepted", 202
