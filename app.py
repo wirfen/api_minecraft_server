@@ -91,20 +91,16 @@ def download():
         password=request.headers["pass"]
     if (password==mypass):
         if(request.args.get("backup")):
-            print(request.args.get("backup"))
             mapa=request.args.get("backup").split("-")[0]
             if(os.path.isfile("backups/{}/{}".format(mapa,request.args.get("backup")))):
-                print("Mecago entodoooo")
                 return send_file("backups/{}/{}".format(mapa, request.args.get("backup")), attachment_filename=request.args.get("backup"), as_attachment=True, mimetype="application/tar+gzip")
             else:
                 return "File not found", 404
         elif(request.args.get("mapa") and not request.args.get("backup")):
             fecha=datetime.now().strftime("%Y_%m_%d_%H_%M")
             if(os.path.isdir("saves/{}".format(request.args.get("mapa")))):
-                os.system("tar -czf backups/{}/{}-{}.tar.gz -C saves/{} .".format(request.args.get("mapa"),request.args.get("mapa"),fecha,request.args.get("mapa")))
-                response = make_response(send_file("backups/{}/{}-{}.tar.gz".format(request.args.get("mapa"), request.args.get("mapa"),fecha),"{}-{}.tar.gz".format(request.args.get("mapa"),fecha), as_attachment=True))
-                response.headers["Content-Type"] = "application/pene; charset=utf-8"
-                return response
+                os.system("mkdir -p backups/{} && tar -czf backups/{}/{}-{}.tar.gz -C saves/{} .".format(request.args.get("mapa"),request.args.get("mapa"),request.args.get("mapa"),fecha,request.args.get("mapa")))
+                return send_file("backups/{}/{}-{}.tar.gz".format(request.args.get("mapa"), request.args.get("mapa"),fecha), attachment_filename=request.args.get("backup"), as_attachment=True, mimetype="application/tar+gzip")
             else:
                 return "Map not found", 404
         else:
