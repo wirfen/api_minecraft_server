@@ -1,7 +1,7 @@
 from funciones.server import *
 from funciones.player import *
 from funciones.whitelist import *
-import os, json, time
+import os, json, time, random
 from flask import Flask, request, send_file
 from datetime import datetime
 from mcstatus import MinecraftServer
@@ -17,30 +17,108 @@ def install():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        os.system("cp funciones/server.properties .")
-        os.system("wget {} -O server.jar".format(request.get_json()["url"]))
-        os.system("mkdir saves backups")
-        open("eula.txt","w").write("eula=true")
-        open("start.sh","w").write("#!/bin/bash\njava -Xms{}M -Xmx{}M -jar server.jar nogui".format(request.get_json()["min_memory"],request.get_json()["max_memory"]))
-        os.system("chmod +x start.sh")
-        startMinecraft()
-        return "Installed"
+        try:
+            os.system("cp funciones/server.properties .")
+            os.system("wget {} -O server.jar".format(request.get_json()["url"]))
+            os.system("mkdir saves backups")
+            open("eula.txt","w").write("eula=true")
+            open("start.sh","w").write("#!/bin/bash\njava -Xms{}M -Xmx{}M -jar server.jar nogui".format(request.get_json()["min_memory"],request.get_json()["max_memory"]))
+            os.system("chmod +x start.sh")
+            startMinecraft()
+            return "Installed"
+        except KeyError:
+            return "Bad request", 404
     else:
         return "Unauthorized", 401
 
-@app.route("/status", methods = ["GET"])
-def status():
+@app.route("/server", methods= ["GET"])
+def server():
     password="null"
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        try:
-            status=servidor.status()
-            query=servidor.query()
-            query.players.online
-            return {"Ping":status.latency, "Players-Names":"{}".format(", ".join(query.players.names)), "Players":status.players.online}
-        except:
-            return "Server shutdown", 503
+        if(request.args.get("action")=="status"):
+            try:
+                status=servidor.status()
+                query=servidor.query()
+                query.players.online
+                return {"Ping":status.latency, "Players-Names":"{}".format(", ".join(query.players.names)), "Players":status.players.online}
+            except:
+                return "Server shutdown", 503
+        elif(request.args.get("action")=="msg"):
+            sendMessage(request.args.get("condition"))
+            return "Server started", 202
+        elif(request.args.get("action")=="start"):
+            startMinecraft()
+            return "Server started", 202
+        elif(request.args.get("action")=="stop"):
+            stopMinecraft()
+            return "Server stoped", 200
+        elif(request.args.get("action")=="restart"):
+            stopMinecraft()
+            startMinecraft()
+            return "Server restarted", 202
+        elif(request.args.get("action")=="weather"):
+            setWeather(request.args.get("condition"))
+            return "Weather " + request.args.get("condition"), 200
+        elif(request.args.get("action")=="daytime"):
+            setDaytime(request.args.get("condition"))
+            return "Time is " + request.args.get("action")=="daytime", 200
+        else:
+            return "Bad request", 400
+    else:
+        return "Unauthorized", 401
+
+@app.route("/player", methods= ["GET"])
+def player():
+    password="null"
+    if "pass" in request.headers:
+        password=request.headers["pass"]
+    if (password==mypass):
+        if(request.args.get("action")=="add"):
+            wl_add(request.args.get("name"))
+            return request.args.get("name") + " added to whitelist", 200
+        elif(request.args.get("action")=="op"):
+            operator(request.args.get("name"))
+            return request.args.get("name") + " is op", 200
+        elif(request.args.get("action")=="deop"):
+            deoperator(request.args.get("name"))
+            return request.args.get("name") + " is deop", 200
+        elif(request.args.get("action")=="survival"):
+            survival(request.args.get("name"))
+            return request.args.get("name") + " is " + request.args.get("action"), 200
+        elif(request.args.get("action")=="creative"):
+            creative(request.args.get("name"))
+            return request.args.get("name") + " is " + request.args.get("action"), 200
+        elif(request.args.get("action")=="spectator"):
+            spectator(request.args.get("name"))
+            return request.args.get("name") + " is " + request.args.get("action"), 200
+        elif(request.args.get("action")=="kick"):
+            kick(request.args.get("name"))
+            return request.args.get("name") + " is " + request.args.get("action")+"ed", 200
+        elif(request.args.get("action")=="ban"):
+            ban(request.args.get("name"))
+            return request.args.get("name") + " is " + request.args.get("action")+"ned", 200
+        elif(request.args.get("action")=="unban"):
+            unban(request.args.get("name"))
+            return request.args.get("name") + " is " + request.args.get("action")+"ned", 200
+        elif(request.args.get("action")=="poor"):
+            poor(request.args.get("name"))
+            return request.args.get("action") + " for " + request.args.get("name"), 200
+        elif(request.args.get("action")=="wood"):
+            wood(request.args.get("name"))
+            return request.args.get("action") + " for " + request.args.get("name"), 200
+        elif(request.args.get("action")=="iron"):
+            iron(request.args.get("name"))
+            return request.args.get("action") + " for " + request.args.get("name"), 200
+        elif(request.args.get("action")=="diamond"):
+            diamond(request.args.get("name"))
+            return request.args.get("action") + " for " + request.args.get("name"), 200
+        elif(request.args.get("action")=="god"):
+            god(request.args.get("name"))
+            return request.args.get("action") + " for " + request.args.get("name"), 200
+        else:
+            return "Bad request", 400
     else:
         return "Unauthorized", 401
 
@@ -50,12 +128,11 @@ def lists():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        backups={}
         if(request.args.get("map")):
             if(os.path.isdir("backups/{}".format(request.args.get("map")))):
                 return json.dumps(sorted(os.listdir("backups/" + request.args.get("map")), reverse=True), indent=1), 200
             else:
-                return "Map not found", 404
+                return "Backup not found", 404
         else:
             return json.dumps(sorted(os.listdir("saves")), indent=1), 200
     else:
@@ -109,7 +186,7 @@ def restore():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        # Restauramos un fichero que subamos
+    # Restauramos un fichero que subamos
         if(request.content_type and not request.args.get("backup")):
             file = request.files["fichero"]
             mapa=file.filename.split("-")[0]
@@ -125,7 +202,6 @@ def restore():
             except:
                 os.system("rm backups/{}".format(file.filename))
                 return "File not supported", 415
-
 	# Restauramos un fichero de backup
         elif(request.args.get("backup") and not request.content_type):
             backup = request.args.get("backup")
@@ -208,80 +284,6 @@ def delete():
             os.system("rm -r saves/{}".format(request.args.get("mapa")))
             os.system("rm -r backups/{}".format(request.args.get("backup").split("-")[0], request.args.get("backup")))
             return "{} map and backups deleted".format(request.args.get("mapa"))
-        else:
-            return "Bad request", 400
-    else:
-        return "Unauthorized", 401
-
-@app.route("/server", methods= ["GET"])
-def server():
-    password="null"
-    if "pass" in request.headers:
-        password=request.headers["pass"]
-    if (password==mypass):
-        if(request.args.get("action")=="start"):
-            startMinecraft()
-            return "Accepted", 202
-        elif(request.args.get("action")=="stop"): #Parar minecraft
-            stopMinecraft()
-            return "Ok", 200
-        elif(request.args.get("action")=="restart"): #Reiniciar minecraft
-            stopMinecraft()
-            startMinecraft()
-            return "Accepted", 202
-        elif(request.args.get("action")=="weather"): #Reiniciar minecraft
-            setWheater(request.args.get("condition"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="daytime"): #Reiniciar minecraft
-            setDaytime(request.args.get("condition"))
-            return "Accepted", 202
-        else:
-            return "Bad request", 400
-    else:
-        return "Unauthorized", 401
-
-@app.route("/player", methods= ["GET"])
-def player():
-    password="null"
-    if "pass" in request.headers:
-        password=request.headers["pass"]
-    if (password==mypass):
-        if(request.args.get("action")=="add"):
-            wl_add(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="op"):
-            operator(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="deop"):
-            deoperator(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="survival"):
-            survival(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="creative"):
-            creative(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="spectator"):
-            spectator(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="kick"):
-            kick(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="ban"):
-            ban(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="unban"):
-            unban(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="starter"):
-            starter(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="flyer"):
-            flyer(request.args.get("name"))
-            return "Accepted", 202
-        elif(request.args.get("action")=="god"):
-            god(request.args.get("name"))
-            return "Accepted", 202
         else:
             return "Bad request", 400
     else:
