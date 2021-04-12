@@ -21,6 +21,6 @@ def setWeather(weather):
     os.system("screen -S minecraft -p 0 -X stuff 'weather {}^M'".format(weather))
     return True
 
-def setDaytime(daytime):
-    os.system("screen -S minecraft -p 0 -X stuff 'time set {}^M'".format(daytime))
+def setTime(time):
+    os.system("screen -S minecraft -p 0 -X stuff 'time set {}^M'".format(time))
     return True

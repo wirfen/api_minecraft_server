@@ -47,7 +47,7 @@ def server():
                 return "Server shutdown", 503
         elif(request.args.get("action")=="msg"):
             sendMessage(request.args.get("condition"))
-            return "Server started", 202
+            return "Message sended", 200
         elif(request.args.get("action")=="start"):
             startMinecraft()
             return "Server started", 202
@@ -61,9 +61,9 @@ def server():
         elif(request.args.get("action")=="weather"):
             setWeather(request.args.get("condition"))
             return "Weather " + request.args.get("condition"), 200
-        elif(request.args.get("action")=="daytime"):
-            setDaytime(request.args.get("condition"))
-            return "Time is " + request.args.get("action")=="daytime", 200
+        elif(request.args.get("action")=="time"):
+            setTime(request.args.get("condition"))
+            return "Time is " + request.args.get("condition"), 200
         else:
             return "Bad request", 400
     else:
@@ -128,9 +128,9 @@ def lists():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        if(request.args.get("map")):
-            if(os.path.isdir("backups/{}".format(request.args.get("map")))):
-                return json.dumps(sorted(os.listdir("backups/" + request.args.get("map")), reverse=True), indent=1), 200
+        if(request.args.get("world")):
+            if(os.path.isdir("backups/{}".format(request.args.get("world")))):
+                return json.dumps(sorted(os.listdir("backups/" + request.args.get("world")), reverse=True), indent=1), 200
             else:
                 return "Backup not found", 404
         else:
@@ -144,15 +144,15 @@ def makebackup():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        if(request.args.get("mapa") and os.path.isdir("saves/" + request.args.get("mapa"))):
-            mapa=request.args.get("mapa")
+        world=request.args.get("world")
+        if(request.args.get("world") and os.path.isdir("saves/" + world)):    
             fecha=datetime.now().strftime("%Y_%m_%d_%H_%M")
             sendMessage("Haciendo backup...")
-            os.system("mkdir -p backups/{} && tar -czf backups/{}/{}-{}.tar.gz -C saves/{} .".format(mapa,mapa,mapa,fecha,mapa))
+            os.system("mkdir -p backups/{} && tar -czf backups/{}/{}-{}.tar.gz -C saves/{} .".format(world,world,world,fecha,world))
             sendMessage("Finished!!")
-            return "{}-{}.tar.gz".format(mapa,fecha), 201
+            return "{}-{}.tar.gz".format(world,fecha), 201
         else:
-            return "Map not found", 404
+            return "World not found", 404
     else:
         return "Unauthorized", 401
 
@@ -163,18 +163,19 @@ def download():
         password=request.headers["pass"]
     if (password==mypass):
         if(request.args.get("backup")):
-            mapa=request.args.get("backup").split("-")[0]
-            if(os.path.isfile("backups/{}/{}".format(mapa,request.args.get("backup")))):
-                return send_file("backups/{}/{}".format(mapa, request.args.get("backup")), attachment_filename=request.args.get("backup"), as_attachment=True, mimetype="application/tar+gzip")
+            world=request.args.get("backup").split("-")[0]
+            if(os.path.isfile("backups/{}/{}".format(world,request.args.get("backup")))):
+                return send_file("backups/{}/{}".format(world, request.args.get("backup")), attachment_filename=request.args.get("backup"), as_attachment=True, mimetype="application/tar+gzip")
             else:
                 return "File not found", 404
-        elif(request.args.get("mapa") and not request.args.get("backup")):
+        elif(request.args.get("world") and not request.args.get("backup")):
+            sendMessage("Haciendo backup...")
             fecha=datetime.now().strftime("%Y_%m_%d_%H_%M")
-            if(os.path.isdir("saves/{}".format(request.args.get("mapa")))):
-                os.system("mkdir -p backups/{} && tar -czf backups/{}/{}-{}.tar.gz -C saves/{} .".format(request.args.get("mapa"),request.args.get("mapa"),request.args.get("mapa"),fecha,request.args.get("mapa")))
-                return send_file("backups/{}/{}-{}.tar.gz".format(request.args.get("mapa"), request.args.get("mapa"),fecha), attachment_filename=request.args.get("backup"), as_attachment=True, mimetype="application/tar+gzip")
+            if(os.path.isdir("saves/{}".format(request.args.get("world")))):
+                os.system("mkdir -p backups/{} && tar -czf backups/{}/{}-{}.tar.gz -C saves/{} .".format(request.args.get("world"),request.args.get("world"),request.args.get("world"),fecha,request.args.get("world")))
+                return send_file("backups/{}/{}-{}.tar.gz".format(request.args.get("world"), request.args.get("world"),fecha), attachment_filename=request.args.get("backup"), as_attachment=True, mimetype="application/tar+gzip")
             else:
-                return "Map not found", 404
+                return "World not found", 404
         else:
             return "Bad request", 400
     else:
@@ -188,7 +189,7 @@ def restore():
     if (password==mypass):
     # Restauramos un fichero que subamos
         if(request.content_type and not request.args.get("backup")):
-            file = request.files["fichero"]
+            file = request.files["file"]
             mapa=file.filename.split("-")[0]
             try:
                 stopMinecraft()
@@ -198,7 +199,7 @@ def restore():
                 os.system("mkdir -p saves/{} && tar -xzf backups/{}/{} -C saves/{}".format(mapa, mapa, file.filename, mapa)) #Restauramos el mapa subido
                 os.system("sed -i -e '/level-name/c\level-name=saves/{}' server.properties".format(mapa)) # Configuramos el servidor para usar ese mapa
                 startMinecraft()
-                return "Accepted", 202
+                return "Restore from server in progress...", 202
             except:
                 os.system("rm backups/{}".format(file.filename))
                 return "File not supported", 415
@@ -212,7 +213,7 @@ def restore():
                 os.system("mkdir -p saves/{} && tar -xzf backups/{}/{} -C saves/{}".format(mapa, mapa, backup, mapa)) #Restauramos el mapa de backup
                 os.system("sed -i -e '/level-name/c\level-name=saves/{}' server.properties".format(mapa)) # Configuramos el servidor para usar ese mapa
                 startMinecraft()
-                return "Accepted", 202
+                return "Restore from file in progress...", 202
             else:
                 return "File not found", 404
         else:
@@ -226,18 +227,18 @@ def change():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        if(request.args.get("map")):
+        if(request.args.get("world")):
             try:
                 stopMinecraft()
-                os.system("mkdir saves/{}".format(request.args.get("map")))
-                os.system("sed -i -e '/level-name/c\level-name=saves/{}' server.properties".format(request.args.get("map"))) #Configuramos el servidor para usar ese mapa
+                os.system("mkdir saves/{}".format(request.args.get("world")))
+                os.system("sed -i -e '/level-name/c\level-name=saves/{}' server.properties".format(request.args.get("world"))) #Configuramos el servidor para usar ese mapa
                 os.system("sed -i -e '/level-seed/c\level-seed={}' server.properties".format(random.getrandbits(32))) #Generamos una semilla aleatoria
                 startMinecraft()
-                return "Loading map {}".format(request.args.get("map")), 202
+                return "Loading world {}".format(request.args.get("world")), 202
             except:
                 return "Map cant be changed", 500
         else:
-            return "Map not found", 404
+            return "Bad request", 400
     else:
         return "Unauthorized", 401
 
@@ -270,29 +271,24 @@ def delete():
     if "pass" in request.headers:
         password=request.headers["pass"]
     if (password==mypass):
-        if(request.args.get("backup") and not request.args.get("mapa")):
-            mapa=request.args.get("backup").split("-")[0]
-            os.system("rm backups/{}/{}".format(mapa, request.args.get("backup")))
+        if(request.args.get("backup") and not request.args.get("world")):
+            backup=request.args.get("backup").split("-")[0]
+            os.system("rm backups/{}/{}".format(backup, request.args.get("backup")))
             return request.args.get("backup") + " deleted", 200
-        elif(request.args.get("mapa") and not request.args.get("backup")):
+        elif(request.args.get("world") and not request.args.get("backup")):
             stopMinecraft()
-            os.system("rm -r saves/{}".format(request.args.get("mapa")))
+            os.system("rm -r saves/{}".format(request.args.get("world")))
             startMinecraft()
-            return request.args.get("mapa") + " deleted", 200
-        elif(request.args.get("mapa") and request.args.get("backup") and request.args.get("mapa") == request.args.get("backup")):
+            return request.args.get("world") + " deleted", 200
+        elif(request.args.get("world") and request.args.get("backup") and request.args.get("world") == request.args.get("backup")):
             stopMinecraft()
-            os.system("rm -r saves/{}".format(request.args.get("mapa")))
+            os.system("rm -r saves/{}".format(request.args.get("world")))
             os.system("rm -r backups/{}".format(request.args.get("backup").split("-")[0], request.args.get("backup")))
-            return "{} map and backups deleted".format(request.args.get("mapa"))
+            return "{} map and backups deleted".format(request.args.get("world"))
         else:
             return "Bad request", 400
     else:
         return "Unauthorized", 401
-
-@app.route("/test", methods= ["GET"])
-def test():
-    sendMessage("Hola chicos")
-    return {"Status":"Server Crazy", "Date": datetime.now().strftime("%d-%m-%Y_%H:%M")}, 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=12345, debug=True)

@@ -9,7 +9,13 @@
 			"name": "Install",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "pass",
+						"value": "{{pass}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"min_memory\":4096,\r\n    \"max_memory\":4096,\r\n    \"url\":\"https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar\"\r\n}",
@@ -19,29 +25,6 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{url}}/install",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"install"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Status",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "pass",
-						"value": "123",
-						"type": "text"
-					}
-				],
 				"url": {
 					"raw": "{{url}}/status",
 					"host": [
@@ -55,18 +38,85 @@
 			"response": []
 		},
 		{
+			"name": "Servidor",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "pass",
+						"value": "{{pass}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/server?action=start",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"server"
+					],
+					"query": [
+						{
+							"key": "condition",
+							"value": "rain",
+							"disabled": true
+						},
+						{
+							"key": "action",
+							"value": "start"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Player",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "pass",
+						"value": "{{pass}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/player?action=add&name=wirffen",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"player"
+					],
+					"query": [
+						{
+							"key": "action",
+							"value": "add"
+						},
+						{
+							"key": "name",
+							"value": "wirffen"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Listar",
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "pass",
-						"value": "123",
+						"value": "{{pass}}",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{url}}/lists",
+					"raw": "{{url}}/lists?world=world",
 					"host": [
 						"{{url}}"
 					],
@@ -75,9 +125,8 @@
 					],
 					"query": [
 						{
-							"key": "map",
-							"value": "nuevanormalidad",
-							"disabled": true
+							"key": "world",
+							"value": "world"
 						}
 					]
 				}
@@ -91,12 +140,12 @@
 				"header": [
 					{
 						"key": "pass",
-						"value": "123",
+						"value": "{{pass}}",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{url}}/makebackup?mapa=nuevanormalidad",
+					"raw": "{{url}}/makebackup?world=world",
 					"host": [
 						"{{url}}"
 					],
@@ -105,8 +154,8 @@
 					],
 					"query": [
 						{
-							"key": "mapa",
-							"value": "nuevanormalidad"
+							"key": "world",
+							"value": "world"
 						}
 					]
 				}
@@ -120,7 +169,7 @@
 				"header": [
 					{
 						"key": "pass",
-						"value": "123",
+						"value": "Vz4tQTd7p5uABWDDOPQQUXAQULS7NS88CayFM9GAYMBKxvF78DPkD8PC6clqi5yvt9WuoKBFKC5Ro5R3OAfy0P0C89L6K9w5fS0",
 						"type": "text"
 					},
 					{
@@ -131,7 +180,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/download?backup=nuevanormalidad-Keyid.zip",
+					"raw": "{{url}}/download?mapa=nuevanormalidad",
 					"host": [
 						"{{url}}"
 					],
@@ -141,12 +190,12 @@
 					"query": [
 						{
 							"key": "mapa",
-							"value": "nuevanormalidad",
-							"disabled": true
+							"value": "nuevanormalidad"
 						},
 						{
 							"key": "backup",
-							"value": "nuevanormalidad-Keyid.zip"
+							"value": "lucia-2021_04_07_06_08.tar.gz",
+							"disabled": true
 						}
 					]
 				}
@@ -160,7 +209,7 @@
 				"header": [
 					{
 						"key": "pass",
-						"value": "123",
+						"value": "{{pass}}",
 						"type": "text"
 					}
 				],
@@ -168,15 +217,14 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "fichero",
+							"key": "file",
 							"type": "file",
-							"src": "/home/wirfen/Descargas/nuevanormalidad-2021_01_31_09_31.tar.gz",
-							"disabled": true
+							"src": "/C:/Users/wirfen/Downloads/mapas/mapa_filtro-2021_04_07_10_18.tar.gz"
 						}
 					]
 				},
 				"url": {
-					"raw": "{{url}}/restore?backup=nuevanormalidad-2021_01_31_17_41.tar.gz",
+					"raw": "{{url}}/restore",
 					"host": [
 						"{{url}}"
 					],
@@ -186,7 +234,8 @@
 					"query": [
 						{
 							"key": "backup",
-							"value": "nuevanormalidad-2021_01_31_17_41.tar.gz"
+							"value": "nuevanormalidad-2021_01_31_17_41.tar.gz",
+							"disabled": true
 						}
 					]
 				}
@@ -200,12 +249,12 @@
 				"header": [
 					{
 						"key": "pass",
-						"value": "123",
+						"value": "{{pass}}",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{url}}/change?map=pruebas",
+					"raw": "{{url}}/change?world=pruebas",
 					"host": [
 						"{{url}}"
 					],
@@ -214,7 +263,7 @@
 					],
 					"query": [
 						{
-							"key": "map",
+							"key": "world",
 							"value": "pruebas"
 						}
 					]
@@ -229,12 +278,12 @@
 				"header": [
 					{
 						"key": "pass",
-						"value": "123",
+						"value": "{{pass}}",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{url}}/delete?mapa=pruebas2",
+					"raw": "{{url}}/delete?world=world",
 					"host": [
 						"{{url}}"
 					],
@@ -248,107 +297,8 @@
 							"disabled": true
 						},
 						{
-							"key": "mapa",
-							"value": "pruebas2"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Servidor",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "pass",
-						"value": "123",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/server?action=start&condition=rain",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"server"
-					],
-					"query": [
-						{
-							"key": "action",
-							"value": "start"
-						},
-						{
-							"key": "condition",
-							"value": "rain"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Player",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "pass",
-						"value": "123",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/player?action=starter&name=wirffen",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"player"
-					],
-					"query": [
-						{
-							"key": "action",
-							"value": "starter"
-						},
-						{
-							"key": "name",
-							"value": "wirffen"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Whitelist",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "pass",
-						"value": "123",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/whitelist?action=on&name=wirffen",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"whitelist"
-					],
-					"query": [
-						{
-							"key": "action",
-							"value": "on"
-						},
-						{
-							"key": "name",
-							"value": "wirffen"
+							"key": "world",
+							"value": "world"
 						}
 					]
 				}
@@ -359,7 +309,13 @@
 			"name": "getProperties",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "pass",
+						"value": "{{pass}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{url}}/properties",
 					"host": [
@@ -378,14 +334,14 @@
 				"method": "PUT",
 				"header": [
 					{
-						"key": "file",
-						"value": "",
+						"key": "pass",
+						"value": "{{pass}}",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "#1.16.5\r\nallow-flight=false\r\nallow-nether=true\r\nannounce-player-achievements=true\r\ndifficulty=3\r\nenable-command-block=false\r\nenable-query=false\r\nenable-rcon=false\r\nforce-gamemode=false\r\ngamemode=0\r\ngenerate-structures=true\r\ngenerator-settings=\r\nhardcore=false\r\nlevel-name=saves/world\r\nlevel-seed=\r\nlevel-type=DEFAULT\r\nmax-build-height=256\r\nmax-players=10\r\nmax-tick-time=60000\r\nmax-world-size=29999984\r\nmotd=Servidor\r\nnetwork-compression-threshold=256\r\nonline-mode=true\r\nop-permission-level=4\r\nplayer-idle-timeout=0\r\npvp=true\r\nresource-pack=\r\nresource-pack-hash=\r\nserver-port=25565\r\nserver-ip=\r\nsnooper-enabled=true\r\nspawn-animals=true\r\nspawn-monsters=true\r\nspawn-npcs=true\r\nspawn-protection=16\r\nview-distance=10\r\nwhite-list=true"
+					"raw": "#1.16.5\r\nallow-flight=false\r\nallow-nether=true\r\nannounce-player-achievements=true\r\ndifficulty=3\r\nenable-command-block=false\r\nenable-query=true\r\nenable-rcon=false\r\nforce-gamemode=false\r\ngamemode=0\r\ngenerate-structures=true\r\ngenerator-settings=\r\nhardcore=false\r\nlevel-name=saves/world\r\nlevel-seed=\r\nlevel-type=DEFAULT\r\nmax-build-height=256\r\nmax-players=10\r\nmax-tick-time=60000\r\nmax-world-size=29999984\r\nmotd=Servidor\r\nnetwork-compression-threshold=256\r\nonline-mode=true\r\nop-permission-level=4\r\nplayer-idle-timeout=0\r\npvp=true\r\nresource-pack=\r\nresource-pack-hash=\r\nserver-port=25565\r\nserver-ip=\r\nsnooper-enabled=true\r\nspawn-animals=true\r\nspawn-monsters=true\r\nspawn-npcs=true\r\nspawn-protection=16\r\nview-distance=10\r\nwhite-list=true"
 				},
 				"url": {
 					"raw": "{{url}}/properties",
@@ -394,51 +350,6 @@
 					],
 					"path": [
 						"properties"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Testing",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "basic",
-					"basic": [
-						{
-							"key": "password",
-							"value": "",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "hola",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"value": "hola",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{url}}/test",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"test"
 					]
 				}
 			},

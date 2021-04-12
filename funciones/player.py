@@ -10,13 +10,13 @@ def deoperator(name):
     return True
 
 def kick(name):
+    wl_remove(name)
     os.system("screen -S minecraft -p 0 -X stuff 'kick {}^M'".format(name))
-    wl_remove(name) 
     return True
 
 def ban(name):
-    wl_remove(name)
     deoperator(name)
+    wl_remove(name)
     os.system("screen -S minecraft -p 0 -X stuff 'clear {}^M'".format(name))
     os.system("screen -S minecraft -p 0 -X stuff 'kill {}^M'".format(name))
     os.system("screen -S minecraft -p 0 -X stuff 'ban {}^M'".format(name))
