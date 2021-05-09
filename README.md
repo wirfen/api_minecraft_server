@@ -22,7 +22,8 @@
    * Borrar mapas y backups
    * Ver y editar el archivo de propiedades.
 
-## Primeros pasos para instalar el servidor
+## Primeros pasos
  Podemos instalarlo de dos formas:
  * Servidor dentro de nuestra maquina:
+ ##Hola
  * Servidor dentro de un contenedor de Docker:
