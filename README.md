@@ -28,9 +28,9 @@
    Hola
  * Servidor dentro de un contenedor de Docker:
   ``` docker
-  jQuery('body').midgardCreate({
-    metadata: {
-      midgardTags: {}
-    }
-  });
+  docker pull wirfen/minecraftserver
+  ```
+
+  ``` docker
+  docker run -d -p 12345:12345 -p 25565:25565 --name minecraft wirfen/minecraftserver
   ```
