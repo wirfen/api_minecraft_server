@@ -25,5 +25,5 @@
 ## Primeros pasos
  Podemos instalarlo de dos formas:
  * Servidor dentro de nuestra maquina:
- ##Hola
+   Hola
  * Servidor dentro de un contenedor de Docker:
