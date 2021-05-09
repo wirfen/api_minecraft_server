@@ -27,10 +27,11 @@
  * Servidor dentro de nuestra maquina:
    Hola
  * Servidor dentro de un contenedor de Docker:  
-Nos descargamos la imagen del repositorio de Docker:
+Nos descargamos la imagen del repositorio de Docker:  
   ``` docker
   docker pull wirfen/minecraftserver
   ```
+Una vez descargada la imagen, la ejecutamos:  
   ``` docker
   docker run -d -p 12345:12345 -p 25565:25565 --name minecraft wirfen/minecraftserver
   ```
