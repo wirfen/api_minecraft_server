@@ -1,5 +1,5 @@
 ﻿# Api Minecraft Server
- Esta aplicación te permitira controlar un servidor de Minecraft con sencillas llamadas API Rest.
+ Esta aplicación te permitira controlar un servidor de Minecraft con sencillas llamadas API Rest. Esta creada en Python y funciona con Flask y Mcstatus.
  ## Caracteristicas
  * Instalar/Actualizar la version del servidor de Minecraft
  * Gestionar el servidor:
@@ -36,3 +36,4 @@ Una vez descargada la imagen, la ejecutamos:
   ```sh
   docker run -d -p 12345:12345 -p 25565:25565 --name minecraft wirfen/minecraftserver
   ```
+Podemos cambiar el puerto 12345 al final del archivo app.py y el puerto 25565 desde el fichero server.properties
