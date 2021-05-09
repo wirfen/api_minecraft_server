@@ -27,3 +27,10 @@
  * Servidor dentro de nuestra maquina:
    Hola
  * Servidor dentro de un contenedor de Docker:
+  ``` javascript
+  jQuery('body').midgardCreate({
+    metadata: {
+      midgardTags: {}
+    }
+  });
+  ```
