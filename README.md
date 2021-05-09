@@ -24,9 +24,12 @@
 
 ## Primeros pasos
  Podemos instalarlo de dos formas:
- * Servidor dentro de nuestra maquina:
+ 
+### - Servidor dentro de nuestra maquina:
+
    Hola
- * Servidor dentro de un contenedor de Docker:
+   
+### - Servidor dentro de un contenedor de Docker:
 
 Nos descargamos la imagen del repositorio de Docker:  
   ```sh
