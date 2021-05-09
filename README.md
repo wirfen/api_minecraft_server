@@ -28,7 +28,9 @@
    Hola
  * Servidor dentro de un contenedor de Docker:
  Nos descargamos la imagen del repositorio de Docker:
- <code>docker pull wirfen/minecraftserver<code>
+  ``` docker
+  docker pull wirfen/minecraftserver
+  ```
   ``` docker
   docker run -d -p 12345:12345 -p 25565:25565 --name minecraft wirfen/minecraftserver
   ```
