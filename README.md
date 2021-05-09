@@ -7,7 +7,7 @@
    * Ver el estado y jugadores activos.
    * Enviar un mensaje.
    * Cambiar el clima y la hora dentro del juego.
- * Gestionar a los jugadores:
+ * Gestionar jugadores:
    * Añadir/Remover de la Whitelist.
    * Añadir/Remover como operador.
    * Cambiar su modo de juego (Survival, Creative, Spectator)
