@@ -26,9 +26,9 @@
  Podemos instalarlo de dos formas:
  
 ### - Servidor dentro de nuestra maquina:
-
-   Hola
-   
+```git
+  git clone docker pull wirfen/minecraftserver
+  ```   
 ### - Servidor dentro de un contenedor de Docker:
 
 Nos descargamos la imagen del repositorio de Docker:  
