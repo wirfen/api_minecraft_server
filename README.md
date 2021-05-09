@@ -26,12 +26,13 @@
  Podemos instalarlo de dos formas:
  * Servidor dentro de nuestra maquina:
    Hola
- * Servidor dentro de un contenedor de Docker:  
+ * Servidor dentro de un contenedor de Docker:
+
 Nos descargamos la imagen del repositorio de Docker:  
-  ``` docker
+  ```sh
   docker pull wirfen/minecraftserver
   ```
 Una vez descargada la imagen, la ejecutamos:  
-  ``` docker
+  ```sh
   docker run -d -p 12345:12345 -p 25565:25565 --name minecraft wirfen/minecraftserver
   ```
